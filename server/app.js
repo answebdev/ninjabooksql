@@ -9,6 +9,8 @@ app.use(
   '/graphql',
   graphqlHTTP({
     schema: schema,
+    // Add this line so we can use the GraphiQL tool in the browser => set to 'true'
+    graphiql: true,
   })
 );
 

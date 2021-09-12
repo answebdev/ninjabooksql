@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const_ = require('lodash');
+const _ = require('lodash');
 
 const { GraphQLObjectType, GraphQLString, GraphQLSchema } = graphql;
 
@@ -43,6 +43,10 @@ const RootQuery = new GraphQLObjectType({
         // Here, we're doing this using Lodash, so be sure to install Lodash (npm install lodash => install inside the 'server' folder) and 'require' it up above.
         // We use Lodash to look through the 'books' array, adn then return ('find') any book that has an 'id' equal to the 'id' that's been attached to the 'args' that the user sends along.
         return _.find(books, { id: args.id });
+
+        // Without Lodash (doesn't work):
+        // let foundBook = books.find((book) => book.id === id);
+        // return foundBook;
       },
     },
   },
