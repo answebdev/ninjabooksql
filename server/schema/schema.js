@@ -17,7 +17,7 @@ const {
 //    how we initially get into the graph from the frontend, e.g. React, to grab data)
 // 3. Define relationships between types ('type relations')
 
-// DUMMY DATA
+// DUMMY DATA - This would usually go in a database, such as MongoDB, etc.
 
 // Type Relations: For 'authorId', 'The Long Earth' has an 'authorId' of '3', because this book was written by 'Terry Pratchett'.
 // So if you look down below in the 'authors' data, the 'id' for 'Terry Pratchett' is '3'.
@@ -30,7 +30,7 @@ const {
 // we can send back the author of that book as well with the query.
 // Without setting up this relationship ('type relations'), we would not be able to do that - we would not be able to query the author of a book,
 // since there would be not relationship set up between 'author' and 'book'.
-// So defining relationships between types is important.
+// So defining relationships between object types is important.
 var books = [
   { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: '1' },
   { name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: '2' },
@@ -109,7 +109,8 @@ const AuthorType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
-    // These are the parameters (terms) that we use in the frontend to make our queries (i.e., 'book')
+    // These are the parameters (terms) that we use in the frontend to make our queries (i.e., 'book').
+    // With this root query, we are able to search for a particular book with a particular 'id'.
     book: {
       type: BookType,
       // 'args' = 'arguments'. This argument is what is passed into the query when we make our query;
@@ -121,7 +122,7 @@ const RootQuery = new GraphQLObjectType({
         // code to get data from db / other source (this data could be stored in a NoSQL database, a SQL database, MongoDB, for example - it doesn't matter where it's stored).
         // Tells GraphQL how to get the data when a request is made.
         // Here, we're doing this using Lodash, so be sure to install Lodash (npm install lodash => install inside the 'server' folder) and 'require' it up above.
-        // We use Lodash to look through the 'books' array, adn then return ('find') any book that has an 'id' equal to the 'id' that's been attached to the 'args' that the user sends along.
+        // We use Lodash to look through the 'books' array, and then return ('find') any book that has an 'id' equal to the 'id' that's been attached to the 'args' that the user sends along.
         return _.find(books, { id: args.id });
 
         // Without Lodash:
@@ -131,11 +132,31 @@ const RootQuery = new GraphQLObjectType({
         // return books.find((book) => book.id === args.id);
       },
     },
+    // With this root query, we are able to search for a particular author with a particular 'id'.
     author: {
       type: AuthorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return _.find(authors, { id: args.id });
+      },
+    },
+    // With this root query, we are able to search for a list of ALL books.
+    // So here, we're going to have a 'GraphQLList' of book types (and not 'type: BookType', since we want a list of ALL books, and not just one book).
+    books: {
+      type: new GraphQLList(BookType),
+      resolve(parent, args) {
+        // We don't really need the arguments 'parent' and 'args' (like we do when searching for a particular book) because we just want to return all of the books.
+        // Here, we're not searching for any particular books - we want a list of ALL the books, so we just return 'books' - this will return the entire list of books.
+        return books;
+      },
+    },
+    // With this root query, we are able to search for a list of ALL authors.
+    authors: {
+      type: new GraphQLList(AuthorType),
+      resolve(parent, args) {
+        // We don't really need the arguments 'parent' and 'args' (like we do when searching for a particular author) because we just want to return all of the authors.
+        // Here, we're not searching for any particular authors - we want a list of ALL the authors, so we just return 'authors' - this will return the entire list of authors.
+        return authors;
       },
     },
   },
