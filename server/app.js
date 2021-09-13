@@ -10,10 +10,11 @@ app.use(
   graphqlHTTP({
     schema: schema,
     // Add this line so we can use the GraphiQL tool in the browser => set to 'true'
+    // (to use tool, go to 'http://localhost:4000/graphql' in the browser - or whatever port you are on)
     graphiql: true,
   })
 );
 
 app.listen(4000, () => {
-  console.log('Now listening for requests on port 4000...');
+  console.log('Now listening for requests on Port 4000...');
 });
