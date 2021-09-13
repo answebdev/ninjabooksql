@@ -8,6 +8,7 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
+  GraphQLList,
 } = graphql;
 
 // Three responsibilities of a schema file (i.e., this file):
@@ -34,9 +35,9 @@ var books = [
   { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: '1' },
   { name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: '2' },
   { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId: '3' },
-  { name: 'The Hero of Ages', genre: 'Fantasy', id: '3', authorId: '2' },
-  { name: 'The Colour of Magic', genre: 'Fantasy', id: '3', authorId: '3' },
-  { name: 'The Light Fantastic', genre: 'Fantasy', id: '3', authorId: '3' },
+  { name: 'The Hero of Ages', genre: 'Fantasy', id: '4', authorId: '2' },
+  { name: 'The Colour of Magic', genre: 'Fantasy', id: '5', authorId: '3' },
+  { name: 'The Light Fantastic', genre: 'Fantasy', id: '6', authorId: '3' },
 ];
 
 var authors = [
@@ -55,7 +56,7 @@ const BookType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     genre: { type: GraphQLString },
-    // Here, when a user queries a book, the user can also query the author.
+    // Here, when a user requests a book, the user can also request the author.
     // This is possible because of the relationships between types defined above.
     // Without defining the relationships, we can't do this, so we need to define the relationships in order to do this
     // (note that 'AuthorType' is the type defined below as its own type for the author):
@@ -79,6 +80,29 @@ const AuthorType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     age: { type: GraphQLInt },
+    // In this relationship, when a user requests an author, we want to return the author's books.
+    // Again, we need to define the 'type relations' (see above) before we can do this.
+    books: {
+      // Each author has potentially a list of books, and not just one book.
+      // So we cannot just use 'BookType' for the type here, since 'BookType' implies that it's just a single book.
+      // What we want to do is tell GraphQL that it's going to be a 'list' of book types.
+      // To do this, we need to use 'GraphQLList' from GraphQL, and 'BookType' is going to go inside,
+      // because it's going to be a GraphQL List of book types.
+      type: new GraphQLList(BookType),
+      resolve(parent, args) {
+        // If we look in the dummy data above in the 'authors' array, we know the 'id' of an author, e.g., '1'.
+        // So we're then going to look through the 'books' array and find every book with an 'authorId' of '1', and we're going to 'return' this.
+        // The way we do that is by using the 'filter' method.
+        // What 'filter' is going to do is it's going to filter through a particular array, in our case here, the 'books' array, because that's what we're searching for.
+        // And it's going to look for objects inside that 'books' array that match up to our criteria, in our case => 'authorId: parent.id' (the 'authorId' is going to equal the 'parent.id' -
+        // remember that the parent is the initial author that is being requested).
+        // So, we're taking that parent 'id', and we're looking in the 'books' array for any book that has an 'authorId' equal to the author's 'id'.
+        // So if we look for request 'Brandon Sanderson', who has an 'id' of '2',
+        // it's going to look for any book that has an 'authorId' of '2' => everything else is going to be FILTERED out of the array (which is why we use the 'filter' method here),
+        // so that we're just returning the array with just the books that have an 'authorId' of '2'.
+        return _.filter(books, { authorId: parent.id });
+      },
+    },
   }),
 });
 
