@@ -163,8 +163,41 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+// MUTATIONS
+// In GraphQL, 'mutations' are what allows us to change our data.
+// So, adding data, deleting data editing data - these are all mutations.
+// In GraphQL, we need to explicitly define our mutations, what data can be changed, added, deleted, etc.
+const Mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  // This will let us store the different kinds of mutations that we want to make (e.g., add an author, update an author, delete an author, etc.):
+  fields: {
+    addAuthor: {
+      type: AuthorType,
+      // When a user makes a mutation query from the frontend, then we'd expect them to send some kind of data, or arguments -
+      // if they want to add an author, for example, they're going to need to send along that author name and the age,
+      // because they're the two different things we want to store in our database for each author.
+      // So we're going to pass these through to the GraphQL server as arguments:
+      args: {
+        name: { type: GraphQLString },
+        age: { type: GraphQLInt },
+      },
+      resolve(parent, args) {
+        // This 'Author' here is our model (that we imported up above).
+        // So we're using this Author to create a new instance of that data type.
+        let author = new Author({
+          name: args.name,
+          age: args.age,
+        });
+        // Take the instance of this author data type and save it to our database:
+        return author.save();
+      },
+    },
+  },
+});
+
 // Export the schema so that we can use it as a property in 'app.js' (in 'app.js', this will be imported as 'schema')
 module.exports = new GraphQLSchema({
   // Pass in our initial Root Query that we defined above
   query: RootQuery,
+  mutation: Mutation,
 });
