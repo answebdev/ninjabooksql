@@ -1,6 +1,8 @@
 // GraphQL Playlist: https://www.youtube.com/playlist?list=PL4cUxeGkcC9iK6Qhn-QLcXCXPQUov1U7f
 const graphql = require('graphql');
 const _ = require('lodash');
+const Book = require('../models/book');
+const Author = require('../models/author');
 
 const {
   GraphQLObjectType,
@@ -31,20 +33,20 @@ const {
 // Without setting up this relationship ('type relations'), we would not be able to do that - we would not be able to query the author of a book,
 // since there would be not relationship set up between 'author' and 'book'.
 // So defining relationships between object types is important.
-var books = [
-  { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: '1' },
-  { name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: '2' },
-  { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId: '3' },
-  { name: 'The Hero of Ages', genre: 'Fantasy', id: '4', authorId: '2' },
-  { name: 'The Colour of Magic', genre: 'Fantasy', id: '5', authorId: '3' },
-  { name: 'The Light Fantastic', genre: 'Fantasy', id: '6', authorId: '3' },
-];
+// var books = [
+//   { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: '1' },
+//   { name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: '2' },
+//   { name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId: '3' },
+//   { name: 'The Hero of Ages', genre: 'Fantasy', id: '4', authorId: '2' },
+//   { name: 'The Colour of Magic', genre: 'Fantasy', id: '5', authorId: '3' },
+//   { name: 'The Light Fantastic', genre: 'Fantasy', id: '6', authorId: '3' },
+// ];
 
-var authors = [
-  { name: 'Patrick Rothfuss', age: 44, id: '1' },
-  { name: 'Brandon Sanderson', age: 42, id: '2' },
-  { name: 'Terry Pratchett', age: 66, id: '3' },
-];
+// var authors = [
+//   { name: 'Patrick Rothfuss', age: 44, id: '1' },
+//   { name: 'Brandon Sanderson', age: 42, id: '2' },
+//   { name: 'Terry Pratchett', age: 66, id: '3' },
+// ];
 
 // Define the Object Types Below
 
@@ -67,7 +69,7 @@ const BookType = new GraphQLObjectType({
         // console.log(parent);
         // Here, 'parent' is the book we queried - we have nested data here: the author is nested inside the book (which is why the book is the 'parent').
         // So what we're doing here is that we're looking through the 'authors' array for the author who has an 'id' equal to the parent 'id' - so the 'id' of the author we initially requested.
-        return _.find(authors, { id: parent.authorId });
+        //  _.find(authors, { id: parent.authorId });
       },
     },
   }),
@@ -100,7 +102,7 @@ const AuthorType = new GraphQLObjectType({
         // So if we look for request 'Brandon Sanderson', who has an 'id' of '2',
         // it's going to look for any book that has an 'authorId' of '2' => everything else is going to be FILTERED out of the array (which is why we use the 'filter' method here),
         // so that we're just returning the array with just the books that have an 'authorId' of '2'.
-        return _.filter(books, { authorId: parent.id });
+        // return _.filter(books, { authorId: parent.id });
       },
     },
   }),
@@ -123,8 +125,7 @@ const RootQuery = new GraphQLObjectType({
         // Tells GraphQL how to get the data when a request is made.
         // Here, we're doing this using Lodash, so be sure to install Lodash (npm install lodash => install inside the 'server' folder) and 'require' it up above.
         // We use Lodash to look through the 'books' array, and then return ('find') any book that has an 'id' equal to the 'id' that's been attached to the 'args' that the user sends along.
-        return _.find(books, { id: args.id });
-
+        // return _.find(books, { id: args.id });
         // Without Lodash:
         // let foundBook = books.find((book) => book.id === args.id);
         // return foundBook;
@@ -137,7 +138,7 @@ const RootQuery = new GraphQLObjectType({
       type: AuthorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(authors, { id: args.id });
+        // return _.find(authors, { id: args.id });
       },
     },
     // With this root query, we are able to search for a list of ALL books.
@@ -147,7 +148,7 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         // We don't really need the arguments 'parent' and 'args' (like we do when searching for a particular book) because we just want to return all of the books.
         // Here, we're not searching for any particular books - we want a list of ALL the books, so we just return 'books' - this will return the entire list of books.
-        return books;
+        // return books;
       },
     },
     // With this root query, we are able to search for a list of ALL authors.
@@ -156,7 +157,7 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         // We don't really need the arguments 'parent' and 'args' (like we do when searching for a particular author) because we just want to return all of the authors.
         // Here, we're not searching for any particular authors - we want a list of ALL the authors, so we just return 'authors' - this will return the entire list of authors.
-        return authors;
+        // return authors;
       },
     },
   },
