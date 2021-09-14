@@ -1,8 +1,21 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const schema = require('./schema/schema');
+const mongoose = require('mongoose');
 
 const app = express();
+
+// Connect to database
+mongoose
+  .connect(
+    'mongodb+srv://ninja:books@cluster0.ypapv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+  )
+  .then(() => {
+    console.log('Connected to database.');
+  });
+// mongoose.connection.once('open', () => {
+//   console.log('Connected');
+// });
 
 // Middleware
 app.use(
