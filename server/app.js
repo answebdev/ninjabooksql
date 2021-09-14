@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// Connect to database
+// Connect to MongoDB database
 mongoose
   .connect(
     'mongodb+srv://ninja:books@cluster0.ypapv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
