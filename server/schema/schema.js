@@ -70,6 +70,11 @@ const BookType = new GraphQLObjectType({
         // Here, 'parent' is the book we queried - we have nested data here: the author is nested inside the book (which is why the book is the 'parent').
         // So what we're doing here is that we're looking through the 'authors' array for the author who has an 'id' equal to the parent 'id' - so the 'id' of the author we initially requested.
         //  _.find(authors, { id: parent.authorId });
+
+        // Return the 'Author' model we created (and imported above).
+        // 'findById' will look in the Author collection in MongoDB and find a record with whatever ID we pass in here, in this case, 'parent.authorId' (remember that the 'parent' refers to the original query of the book).
+        // So, we're looking in the Author collection for any book that has an ID equal to 'parent.authorId'.
+        return Author.findById(parent.authorId);
       },
     },
   }),
@@ -91,6 +96,7 @@ const AuthorType = new GraphQLObjectType({
       // To do this, we need to use 'GraphQLList' from GraphQL, and 'BookType' is going to go inside,
       // because it's going to be a GraphQL List of book types.
       type: new GraphQLList(BookType),
+      // The 'resolve' function is responsible for grabbing the data.
       resolve(parent, args) {
         // If we look in the dummy data above in the 'authors' array, we know the 'id' of an author, e.g., '1'.
         // So we're then going to look through the 'books' array and find every book with an 'authorId' of '1', and we're going to 'return' this.
@@ -103,6 +109,13 @@ const AuthorType = new GraphQLObjectType({
         // it's going to look for any book that has an 'authorId' of '2' => everything else is going to be FILTERED out of the array (which is why we use the 'filter' method here),
         // so that we're just returning the array with just the books that have an 'authorId' of '2'.
         // return _.filter(books, { authorId: parent.id });
+
+        // Use the 'resolve' function to get a list of books associated with the author.
+        // 'find' will look for all records in the Book collection in MongoDB based on certain criteria,
+        // and this criteria is going to be placed inside this object.
+        // In this case, we want to find books based on? => We want the 'authorId' of that book to equal the 'id' of whatever the parent is right here of the author.
+        // So, we do 'authorId' equal to 'parent.id' (i.e., the 'id' of the author):
+        return Book.find({ authorId: parent.id });
       },
     },
   }),
@@ -131,6 +144,13 @@ const RootQuery = new GraphQLObjectType({
         // return foundBook;
         // OR:
         // return books.find((book) => book.id === args.id);
+
+        // Use 'resolve' to grab the data for a particular book.
+        // So we're going to pass through an argument that has an 'id' property.
+        // And we need to find a book based on the 'id'.
+        // So we use 'findById' to look in the Book collection for a particular book.
+        // And we want to pass in 'args.id' - so the ID that the user sends along with the query.
+        return Book.findById(args.id);
       },
     },
     // With this root query, we are able to search for a particular author with a particular 'id'.
@@ -139,6 +159,9 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         // return _.find(authors, { id: args.id });
+
+        // Use 'resolve' to grab the data for a particular author.
+        return Author.findById(args.id);
       },
     },
     // With this root query, we are able to search for a list of ALL books.
@@ -149,6 +172,11 @@ const RootQuery = new GraphQLObjectType({
         // We don't really need the arguments 'parent' and 'args' (like we do when searching for a particular book) because we just want to return all of the books.
         // Here, we're not searching for any particular books - we want a list of ALL the books, so we just return 'books' - this will return the entire list of books.
         // return books;
+
+        // Use 'resolve' to grab the data for ALL books.
+        // To do this, we pass in an empty object.
+        // And when we use the 'find' method without passing through any criteria inside the object, it's going to return ALL of them to us - because they ALL match.
+        return Book.find({});
       },
     },
     // With this root query, we are able to search for a list of ALL authors.
@@ -158,6 +186,9 @@ const RootQuery = new GraphQLObjectType({
         // We don't really need the arguments 'parent' and 'args' (like we do when searching for a particular author) because we just want to return all of the authors.
         // Here, we're not searching for any particular authors - we want a list of ALL the authors, so we just return 'authors' - this will return the entire list of authors.
         // return authors;
+
+        // Use 'resolve' to grab the data for ALL authors.
+        return Author.find({});
       },
     },
   },
