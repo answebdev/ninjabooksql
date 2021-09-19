@@ -11,6 +11,7 @@ const {
   GraphQLID,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
 } = graphql;
 
 // Three responsibilities of a schema file (i.e., this file):
@@ -194,6 +195,18 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+// GraphQLNonNull
+// With GraphQL, a query will be made even if not all fields in the query are provided.
+// In other words, if only an author's name is added, but without the age, the query will still go through,
+// and the name will be stored in the database, but without the age.
+// And we don't want this behavior.
+// To prevent these kinds of queries from being made (i.e., queries that are made without all the relevant information),
+// we're going to use 'GraphQLNonNull' (which we need to bring in up above).
+// And we're going to use 'GraphQLNonNull' to say that a certain field is required - in other words,
+// we're not going to accept a 'null' value for certain fields.
+// So when we are making our mutations, that is where we ideally should say that things should not be 'null'.
+// (see below in mutations for use of 'GraphQLNonNull' => example: new GraphQLNonNull(GraphQLString)).
+
 // MUTATIONS
 // In GraphQL, 'mutations' are what allows us to change our data.
 // So, adding data, deleting data editing data - these are all mutations.
@@ -209,8 +222,8 @@ const Mutation = new GraphQLObjectType({
       // because they're the two different things we want to store in our database for each author.
       // So we're going to pass these through to the GraphQL server as arguments:
       args: {
-        name: { type: GraphQLString },
-        age: { type: GraphQLInt },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
       },
       resolve(parent, args) {
         // This 'Author' here is our model (that we imported up above).
@@ -226,9 +239,12 @@ const Mutation = new GraphQLObjectType({
     addBook: {
       type: BookType,
       args: {
-        name: { type: GraphQLString },
-        genre: { type: GraphQLString },
-        authorId: { type: GraphQLID },
+        // 'GraphQLNonNull' => this 'name' property (or 'genre' or 'authorId') on the arguments when we go to add a book needs to be a 'GraphQLString', and it cannot be 'null'.
+        // If it is 'null', then do not allow the mutation to take place (if you try to make a query without providing all of the fields, you will now get an error, which is what we want -
+        // we don't want to allow a query to be made with just the 'age' stored in the database, for example).
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
         let book = new Book({
