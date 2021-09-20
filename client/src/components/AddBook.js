@@ -1,16 +1,16 @@
 import React from 'react';
-// GraphQL is a query language - it's not JavaScript.
-// So, when we construct queries, we need to use 'qgl' to help us pass our queries so we can make our queries:
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+import { getAuthorsQuery } from '../queries/queries';
 
-const getAuthorsQuery = gql`
-  {
-    authors {
-      name
-      id
-    }
-  }
-`;
+// Move query to 'queries.js' file
+// const getAuthorsQuery = gql`
+//   {
+//     authors {
+//       name
+//       id
+//     }
+//   }
+// `;
 
 const AddBook = () => {
   const { loading, error, data } = useQuery(getAuthorsQuery);

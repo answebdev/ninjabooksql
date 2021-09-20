@@ -7,8 +7,8 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
-  useQuery,
-  gql,
+  // useQuery,
+  // gql,
 } from '@apollo/client';
 
 // Apollo Client Setup
