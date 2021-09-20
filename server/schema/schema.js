@@ -17,7 +17,7 @@ const {
 // Three responsibilities of a schema file (i.e., this file):
 // 1. Define types
 // 2. Define root queries ('root queries' are how we describe that a user can initially jump into the graph and grab data =>
-//    how we initially get into the graph from the frontend, e.g. React, to grab data)
+//    how we initially get into the graph from the frontend, e.g., React, to grab data)
 // 3. Define relationships between types ('type relations')
 
 // DUMMY DATA - This would usually go in a database, such as MongoDB, etc.

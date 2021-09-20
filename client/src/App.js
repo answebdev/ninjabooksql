@@ -1,4 +1,5 @@
 import BookList from './components/BookList';
+import AddBook from './components/AddBook';
 // import {
 //   ApolloClient,
 //   InMemoryCache,
@@ -21,6 +22,7 @@ const App = () => {
     <div id='main'>
       <h1>Ninja Books</h1>
       <BookList />
+      <AddBook />
     </div>
     // </ApolloProvider>
   );
