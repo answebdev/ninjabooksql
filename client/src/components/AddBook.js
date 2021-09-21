@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { getAuthorsQuery, addBookMutation } from '../queries/queries';
+import {
+  getBooksQuery,
+  getAuthorsQuery,
+  addBookMutation,
+} from '../queries/queries';
 
 // Move query to 'queries.js' file
 // const getAuthorsQuery = gql`
@@ -52,6 +56,17 @@ const AddBook = () => {
         genre: genre,
         authorId: authorId,
       },
+      // RENDER LIST OF BOOKS IN BROWSER: 'refetchQueries'
+      // When we add a book, we want to rerun that query;
+      // we want to get those books again so that the component will re-render with the added book.
+      // So when we add a book with the mutation (addBookMutation), we can tell Apollo to refetch a particular query ('refetchQueries').
+      // And with 'refetchQueries', we're going to have an array of different queries that we want to refetch.
+      // So each item is going to be an object, and it's going to have a 'query' property.
+      // And we need to say which query we want to refetch AFTER this 'addBookMutation' has fired.
+      // And the query we want to refetch is the 'getBooksQuery' (which we need to import up above).
+      // So now, when we make a mutation to add a book, it's going to refetch the 'getBooksQuery' query,
+      // and then rerender the component with all of the data - all of the books.
+      refetchQueries: [{ query: getBooksQuery }],
     });
   };
 
