@@ -27,9 +27,14 @@ const getAuthorsQuery = gql`
 // See mutations in 'schema.js' to see what the mutations are called ('addAuthor', 'addBook').
 // Those are the names that we use here, as well as the arguments that the mutations in 'schema.js' take,
 // e.g., 'name', 'genre', 'authorId' for the 'addBook' mutation.
+// Query Variables to make everything dynamic so that whatever information is typed in by the user will be added:
+// $name: String!, $genre: String!, $authorId: ID!
+
+// STOPPED at 2:10
+
 const addBookMutation = gql`
-  mutation {
-    addBook(name: "", genre: "", authorId: "") {
+  mutation ($name: String!, $genre: String!, $authorId: ID!) {
+    addBook(name: $name, genre: $genre, authorId: $authorId) {
       name
       id
     }
