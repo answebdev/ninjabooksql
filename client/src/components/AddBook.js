@@ -40,7 +40,7 @@ const AddBook = () => {
   const [genre, setGenre] = useState('');
   const [authorId, setAuthorId] = useState('');
   const { loading, data } = useQuery(getAuthorsQuery);
-  const [addBookMut, { dataMutation }] = useMutation(addBookMutation);
+  const [addBookMut] = useMutation(addBookMutation);
 
   //   const handleSubmit = (e) => {
   //     e.preventDefault();
