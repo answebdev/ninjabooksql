@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { getBooksQuery } from '../queries/queries';
+import BookDetails from './BookDetails';
 
 // Move query to 'queries.js' file
 // // STEP 1: Create query: Store query in a function
@@ -33,6 +34,7 @@ const BookList = () => {
           return <li key={book.id}> {book.name}</li>;
         })}
       </ul> */}
+      <BookDetails />
     </div>
   );
 };
